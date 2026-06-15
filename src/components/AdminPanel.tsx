@@ -177,7 +177,7 @@ const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             onClick={(e) => e.stopPropagation()}
-            className="w-full bg-[#fafafa] border border-neutral-300 p-2 text-xs focus:outline-none focus:border-black font-sans mt-1 transition-all"
+            className="w-full bg-[#fafafa] border border-neutral-300 p-2 text-xs focus:outline-none focus:border-black font-sans mt-1"
           />
         )}
       </div>
@@ -201,6 +201,9 @@ interface AdminPanelProps {
   etcCategories: string[];
   onUpdateEtcCategories: (categories: string[]) => void;
   onClose: () => void;
+  featuredLeftId: string;
+  featuredRightId: string;
+  onUpdateFeatured: (leftId: string, rightId: string) => void;
 }
 
 export default function AdminPanel({
@@ -218,7 +221,10 @@ export default function AdminPanel({
   onUpdateFilmsCategories,
   etcCategories = [],
   onUpdateEtcCategories,
-  onClose
+  onClose,
+  featuredLeftId,
+  featuredRightId,
+  onUpdateFeatured
 }: AdminPanelProps) {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -1064,6 +1070,48 @@ export default function AdminPanel({
               <Save className="w-3 h-3" /> Save Profile Info
             </button>
           </form>
+        </div>
+
+        {/* Homepage Bracket Featured Posts Settings */}
+        <div className="p-4 border-t border-[#0d0d0d]/10 bg-[#fafafa]">
+          <h4 className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-neutral-500 mb-3">
+            <Grid className="w-3.5 h-3.5" /> Homepage Featured [ ]
+          </h4>
+          <div className="space-y-3 text-xs">
+            <div>
+              <label className="block text-[8px] font-mono text-neutral-400 uppercase">Left Main Post (좌측 메인)</label>
+              <select
+                value={featuredLeftId}
+                onChange={(e) => onUpdateFeatured(e.target.value, featuredRightId)}
+                className="w-full bg-white border border-neutral-300 px-1.5 py-1 text-[11px] focus:outline-none focus:border-black font-sans cursor-pointer h-8 rounded-none"
+              >
+                <option value="">-- Select Left Post (좌측 메인) --</option>
+                {items.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    [{item.category}] {item.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[8px] font-mono text-neutral-400 uppercase">Right Main Post (우측 메인)</label>
+              <select
+                value={featuredRightId}
+                onChange={(e) => onUpdateFeatured(featuredLeftId, e.target.value)}
+                className="w-full bg-white border border-neutral-300 px-1.5 py-1 text-[11px] focus:outline-none focus:border-black font-sans cursor-pointer h-8 rounded-none"
+              >
+                <option value="">-- Select Right Post (우측 메인) --</option>
+                {items.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    [{item.category}] {item.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p className="text-[10px] text-neutral-400 leading-normal">
+              * 설정하지 않을 경우 가장 최근 등록된 아카이브 2개가 자동으로 노출됩니다.
+            </p>
+          </div>
         </div>
         </div>
       </div>

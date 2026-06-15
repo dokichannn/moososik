@@ -25,6 +25,10 @@ export default function App() {
   const [footerConfig, setFooterConfig] = useState<FooterConfig>(initialFooterConfig);
   const [activeTab, setActiveTab] = useState<Category | 'Home'>('Home');
   
+  // Featured display items inside brackets logo
+  const [featuredLeftId, setFeaturedLeftId] = useState<string>('');
+  const [featuredRightId, setFeaturedRightId] = useState<string>('');
+  
   // Detail page selection
   const [selectedDetailItem, setSelectedDetailItem] = useState<ArchiveItem | null>(null);
   const [activeDetailImageUrl, setActiveDetailImageUrl] = useState<string | null>(null);
@@ -81,6 +85,11 @@ export default function App() {
     const cachedObjectCategories = localStorage.getItem('moososik_object_categories');
     const cachedFilmsCategories = localStorage.getItem('moososik_films_categories');
     const cachedEtcCategories = localStorage.getItem('moososik_etc_categories');
+    
+    const cachedLeftId = localStorage.getItem('moososik_featured_left_id');
+    const cachedRightId = localStorage.getItem('moososik_featured_right_id');
+    if (cachedLeftId) setFeaturedLeftId(cachedLeftId);
+    if (cachedRightId) setFeaturedRightId(cachedRightId);
 
     if (cachedItems) {
       setItems(JSON.parse(cachedItems));
@@ -164,6 +173,13 @@ export default function App() {
   const handleUpdateFooter = (config: FooterConfig) => {
     setFooterConfig(config);
     localStorage.setItem('moososik_footer_config', JSON.stringify(config));
+  };
+
+  const handleUpdateFeatured = (leftId: string, rightId: string) => {
+    setFeaturedLeftId(leftId);
+    setFeaturedRightId(rightId);
+    localStorage.setItem('moososik_featured_left_id', leftId);
+    localStorage.setItem('moososik_featured_right_id', rightId);
   };
 
   const handleUpdateVisualCategories = (categories: string[]) => {
@@ -252,10 +268,14 @@ export default function App() {
     ? etcItems
     : etcItems.filter(e => (e.type || e.subCategory) === etcFilter);
 
-  // Extract custom featured highlight items for homepage visual billboard (Get the two latest added items across all archives)
+  // Extract custom featured highlight items for homepage visual billboard
   const sortedItemsForFeatured = [...items].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  const featuredItemLeft = sortedItemsForFeatured[0] || initialArchiveItems[0];
-  const featuredItemRight = sortedItemsForFeatured[1] || initialArchiveItems[1] || featuredItemLeft;
+  
+  const foundFeaturedLeft = items.find(i => i.id === featuredLeftId);
+  const foundFeaturedRight = items.find(i => i.id === featuredRightId);
+
+  const featuredItemLeft = foundFeaturedLeft || sortedItemsForFeatured[0] || initialArchiveItems[0];
+  const featuredItemRight = foundFeaturedRight || sortedItemsForFeatured[1] || initialArchiveItems[1] || featuredItemLeft;
   const featuredItem = featuredItemLeft; // Keep for compatibility constraints
 
   let featuredImgLeft = '';
@@ -312,6 +332,9 @@ export default function App() {
           etcCategories={etcCategories}
           onUpdateEtcCategories={handleUpdateEtcCategories}
           onClose={() => setShowAdmin(false)}
+          featuredLeftId={featuredLeftId}
+          featuredRightId={featuredRightId}
+          onUpdateFeatured={handleUpdateFeatured}
         />
       )}
 
@@ -1367,7 +1390,7 @@ export default function App() {
                         <div
                           key={item.id}
                           onClick={() => handleSelectItem(item)}
-                          className="group bg-white border-r border-b border-neutral-300 p-6 flex flex-col justify-between min-h-[420px] cursor-pointer transition-all duration-300 hover:bg-[#fafafa] relative overflow-hidden"
+                          className="group bg-white border-r border-b border-neutral-300 p-6 flex flex-col justify-between min-h-[480px] cursor-pointer transition-all duration-300 hover:bg-[#fafafa] relative overflow-hidden"
                         >
                           {/* Hover Memoir Overlay */}
                           <div className="absolute inset-0 bg-black/45 bg-gradient-to-t from-black/95 via-black/40 to-black/70 p-5 opacity-0 group-hover:opacity-100 transition-all duration-350 text-white z-10 flex flex-col justify-between">
@@ -1403,7 +1426,7 @@ export default function App() {
                           </div>
 
                           {/* Center Floating Image - beautiful white backdrop with safe padding */}
-                          <div className="w-full h-[220px] flex items-center justify-center p-4 bg-[#fafafa]/50 border border-neutral-100 my-4 overflow-hidden relative">
+                          <div className="w-full h-[280px] flex items-center justify-center p-1 bg-[#fafafa]/50 border border-neutral-100 my-4 overflow-hidden relative">
                             <img
                               src={item.imageUrl}
                               alt={item.title}
