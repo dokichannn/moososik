@@ -1,0 +1,77 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-display: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-serif: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-mono: "Pretendard", "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-canvas: #fafafa;
+  --color-foreground: #0d0d0d;
+}
+
+/* Custom Base Styling for a refined magazine editorial feel */
+html, body {
+  background-color: var(--color-canvas);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  cursor: none; /* Custom elegant minimal circular cursor */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide default cursor on interactive items to protect elegant custom cursor */
+a, button, input, textarea, select {
+  cursor: none !important;
+}
+
+/* Restore native operating system mouse cursor in Admin Panel for easy typing & editing */
+body.admin-open,
+body.admin-open a,
+body.admin-open button,
+body.admin-open input,
+body.admin-open textarea,
+body.admin-open select {
+  cursor: auto !important;
+}
+
+/* Custom selection styling */
+::selection {
+  background-color: #0d0d0d;
+  color: #fafafa;
+}
+
+/* Hide scrollbar but keep functionality for maximum clean look */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Custom flip animation for Object Cards */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+/* Elegant scanline / paper overlay texture for a magazine tactile look */
+.paper-grain {
+  pointer-events: none;
+  opacity: 0.015;
+  background-image: radial-gradient(#000 20%, transparent 20%),
+                    radial-gradient(#000 20%, transparent 20%);
+  background-size: 3px 3px;
+  background-position: 0 0, 1.5px 1.5px;
+}

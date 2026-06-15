@@ -1,0 +1,6 @@
+{
+  "name": "MOOSOSIK",
+  "description": "Design Archive - A digital library curated with personal taste, aesthetic thoughts, and sensory memories.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
