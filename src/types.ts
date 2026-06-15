@@ -43,6 +43,7 @@ export interface ObjectItem extends BaseItem {
   imageUrl: string;
   memo: string; // Why I archived (1 line, e.g. "타이포 비율이 좋다")
   reasonArchived: string;
+  images?: string[]; // optional scrollable extra images in order
 }
 
 export interface FilmItem extends BaseItem {

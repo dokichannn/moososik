@@ -389,12 +389,12 @@ export default function App() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                   {/* Left Column: Big Display Image (Active Thumbnail or Main Image) */}
                   <div className="lg:col-span-7">
-                    <div className="w-full aspect-[4/5] md:aspect-[16/11] overflow-hidden bg-neutral-100 relative group border border-neutral-200">
+                    <div className="w-full flex items-center justify-center bg-white relative group border border-neutral-200 p-2 md:p-4 min-h-[300px] md:min-h-[500px]">
                       <img
                         src={activeDetailImageUrl || selectedDetailItem.imageUrl}
                         alt={selectedDetailItem.title}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover brightness-95 opacity-90 hover:opacity-100 transition-all duration-700 hover:scale-[1.01]"
+                        className="max-w-full max-h-[75vh] h-auto object-contain transition-all duration-300"
                       />
                     </div>
                   </div>
@@ -547,22 +547,26 @@ export default function App() {
               )}
 
               {selectedDetailItem.category === 'Object' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto py-10">
-                  <div className="overflow-hidden bg-neutral-100 border border-neutral-200">
-                    <img
-                      src={selectedDetailItem.imageUrl}
-                      alt={selectedDetailItem.title}
-                      referrerPolicy="no-referrer"
-                      className="w-full aspect-square object-cover"
-                    />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start max-w-7xl mx-auto py-10 px-4 md:px-0">
+                  {/* Left Column: Big Display Image (Active Thumbnail or Main Image) */}
+                  <div className="lg:col-span-7">
+                    <div className="w-full flex items-center justify-center bg-white relative group border border-neutral-200 p-2 md:p-4 min-h-[300px] md:min-h-[500px]">
+                      <img
+                        src={activeDetailImageUrl || selectedDetailItem.imageUrl}
+                        alt={selectedDetailItem.title}
+                        referrerPolicy="no-referrer"
+                        className="max-w-full max-h-[75vh] h-auto object-contain transition-all duration-300"
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-8">
+                  {/* Right Column: Sticky Project Metadata */}
+                  <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-8 pl-0 lg:pl-10">
                     <div>
                       <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-neutral-400">
-                        Archived Object Card
+                        {selectedDetailItem.type || 'FURNITURE'} Object
                       </span>
-                      <h1 className="font-display font-medium text-3xl tracking-tight text-[#0d0d0d] mt-2 leading-tight">
+                      <h1 className="font-display font-medium text-3xl md:text-4xl tracking-tight text-[#0d0d0d] mt-2 mb-4 leading-tight">
                         {selectedDetailItem.title}
                       </h1>
                       <div className="font-serif italic text-xs text-neutral-400 mt-2">
@@ -591,10 +595,64 @@ export default function App() {
 
                     <div className="space-y-3">
                       <h4 className="font-mono text-[10px] uppercase tracking-wider text-neutral-500">Reason I Archived:</h4>
-                      <p className="text-neutral-700 text-sm leading-relaxed prose prose-sm">
+                      <p className="text-neutral-700 text-sm leading-relaxed whitespace-pre-line font-sans">
                         {(selectedDetailItem as ObjectItem).reasonArchived}
                       </p>
                     </div>
+
+                    {/* Interactive Thumbnail Selector for scrolling images at the bottom of description */}
+                    {((((selectedDetailItem as ObjectItem).images && ((selectedDetailItem as ObjectItem).images || []).length > 0) || selectedDetailItem.imageUrl)) && (
+                      <div className="pt-8 border-t border-black/10 mt-8 space-y-3">
+                        <span className="font-mono text-lg font-black tracking-[0.4em] text-[#0d0d0d]/80 block select-none leading-none">
+                          ...
+                        </span>
+                        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                          {/* Always include the main image as option 1 */}
+                          {selectedDetailItem.imageUrl && (
+                            <button
+                              type="button"
+                              onClick={() => setActiveDetailImageUrl(selectedDetailItem.imageUrl)}
+                              className={`aspect-square overflow-hidden bg-neutral-100 border transition-all ${
+                                activeDetailImageUrl === selectedDetailItem.imageUrl
+                                  ? 'border-black ring-1 ring-black scale-95'
+                                  : 'border-[#0d0d0d]/10 hover:border-black/50 hover:scale-[1.02]'
+                              }`}
+                            >
+                              <img
+                                src={selectedDetailItem.imageUrl}
+                                alt="Main Thumb"
+                                className="w-full h-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                            </button>
+                          )}
+
+                          {/* Render other sub images only if they are not identical to main image */}
+                          {(selectedDetailItem as ObjectItem).images?.filter(imgUrl => imgUrl !== selectedDetailItem.imageUrl).map((imgUrl, i) => {
+                            const isSelected = activeDetailImageUrl === imgUrl;
+                            return (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => setActiveDetailImageUrl(imgUrl)}
+                                className={`aspect-square overflow-hidden bg-neutral-100 border transition-all ${
+                                  isSelected
+                                    ? 'border-black ring-1 ring-black scale-95'
+                                    : 'border-[#0d0d0d]/10 hover:border-black/50 hover:scale-[1.02]'
+                                }`}
+                              >
+                                <img
+                                  src={imgUrl}
+                                  alt={`Sub Thumb ${i + 1}`}
+                                  className="w-full h-full object-cover"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}              {selectedDetailItem.category === 'Films' && (() => {
@@ -949,7 +1007,7 @@ export default function App() {
                         <div
                           key={item.id}
                           onClick={() => handleSelectItem(item)}
-                          className="group bg-white border-r border-b border-neutral-300 p-6 flex flex-col justify-between min-h-[420px] cursor-pointer transition-all duration-300 hover:bg-[#fafafa] relative overflow-hidden"
+                          className="group bg-white border-r border-b border-neutral-300 p-6 flex flex-col justify-between min-h-[480px] cursor-pointer transition-all duration-300 hover:bg-[#fafafa] relative overflow-hidden"
                         >
                           {/* Hover Memoir Overlay */}
                           <div className="absolute inset-0 bg-black/45 bg-gradient-to-t from-black/95 via-black/40 to-black/70 p-5 opacity-0 group-hover:opacity-100 transition-all duration-350 text-white z-10 flex flex-col justify-between">
@@ -985,7 +1043,7 @@ export default function App() {
                           </div>
 
                           {/* Center Floating Image - beautiful white backdrop with safe padding */}
-                          <div className="w-full h-[220px] flex items-center justify-center p-4 bg-[#fafafa]/50 border border-neutral-100 my-4 overflow-hidden relative">
+                          <div className="w-full h-[280px] flex items-center justify-center p-1 bg-[#fafafa]/50 border border-neutral-100 my-4 overflow-hidden relative">
                             <img
                               src={item.imageUrl}
                               alt={item.title}
@@ -1109,7 +1167,7 @@ export default function App() {
                         <div
                           key={item.id}
                           onClick={() => handleSelectItem(item)}
-                          className="group bg-white border-r border-b border-neutral-300 p-6 flex flex-col justify-between min-h-[420px] cursor-pointer transition-all duration-300 hover:bg-[#fafafa] relative overflow-hidden"
+                          className="group bg-white border-r border-b border-neutral-300 p-6 flex flex-col justify-between min-h-[480px] cursor-pointer transition-all duration-300 hover:bg-[#fafafa] relative overflow-hidden"
                         >
                           {/* Hover Memoir Overlay - Matches the elegance of Films */}
                           <div className="absolute inset-0 bg-black/45 bg-gradient-to-t from-black/95 via-black/40 to-black/70 p-5 opacity-0 group-hover:opacity-100 transition-all duration-350 text-white z-10 flex flex-col justify-between">
@@ -1145,7 +1203,7 @@ export default function App() {
                           </div>
 
                           {/* Center Floating Image - beautiful white backdrop with safe padding to center any aspect ratio shape perfectly */}
-                          <div className="w-full h-[220px] flex items-center justify-center p-4 bg-[#fafafa]/50 border border-neutral-100 my-4 overflow-hidden relative">
+                          <div className="w-full h-[280px] flex items-center justify-center p-1 bg-[#fafafa]/50 border border-neutral-100 my-4 overflow-hidden relative">
                             <img
                               src={item.imageUrl}
                               alt={item.title}

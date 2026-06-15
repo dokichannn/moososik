@@ -259,6 +259,7 @@ export default function AdminPanel({
   const [objectImageUrl, setObjectImageUrl] = useState('');
   const [objectMemo, setObjectMemo] = useState('');
   const [objectReasonArchived, setObjectReasonArchived] = useState('');
+  const [objectSubImages, setObjectSubImages] = useState<string[]>([]);
 
   // Films
   const [filmType, setFilmType] = useState<string>('Movie');
@@ -323,6 +324,7 @@ export default function AdminPanel({
     setObjectImageUrl('');
     setObjectMemo('');
     setObjectReasonArchived('');
+    setObjectSubImages([]);
 
     setFilmType(filmsCategories[0] || 'Movie');
     setFilmDirector('');
@@ -371,6 +373,7 @@ export default function AdminPanel({
       setObjectImageUrl(item.imageUrl || '');
       setObjectMemo(item.memo || '');
       setObjectReasonArchived(item.reasonArchived || '');
+      setObjectSubImages((item as ObjectItem).images ? ((item as ObjectItem).images || []) : []);
     } else if (item.category === 'Films') {
       const film = item as FilmItem;
       setFilmType(film.type || filmsCategories[0] || 'Movie');
@@ -439,7 +442,8 @@ export default function AdminPanel({
         material: objectMaterial,
         imageUrl: objectImageUrl || 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c',
         memo: objectMemo,
-        reasonArchived: objectReasonArchived
+        reasonArchived: objectReasonArchived,
+        images: objectSubImages.filter(Boolean).length > 0 ? objectSubImages.filter(Boolean) : [objectImageUrl || 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c']
       } as ArchiveItem;
     } else if (selectedCategory === 'Films') {
       newItem = {
@@ -1405,6 +1409,52 @@ export default function AdminPanel({
                         placeholder="https://images.unsplash.com/..."
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="block text-[10px] uppercase font-mono tracking-wider text-neutral-500 mb-1 flex justify-between items-center">
+                      <span>Scrolling Image Gallery (추가 스크롤링 이미지)</span>
+                      <button
+                        type="button"
+                        onClick={() => setObjectSubImages([...objectSubImages, ''])}
+                        className="text-[9px] font-mono text-[#0d0d0d] hover:underline uppercase flex items-center gap-1"
+                      >
+                        <Plus size={10} /> Add Image (사진 추가)
+                      </button>
+                    </label>
+
+                    {objectSubImages.length === 0 ? (
+                      <div className="text-[11px] text-neutral-400 font-sans border border-dashed border-neutral-200 p-4 text-center select-none bg-white">
+                        등록된 추가 스크롤링 이미지가 없습니다. 우측 상단의 '사진 추가' 버튼을 눌러 추가해주세요.
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[350px] overflow-y-auto p-1 border border-neutral-100 bg-neutral-50/50">
+                        {objectSubImages.map((imgUrl, index) => (
+                          <div key={index} className="relative border border-neutral-200 bg-white p-2.5 space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[9px] font-mono text-neutral-500 font-bold">IMAGE #{index + 1}</span>
+                              <button
+                                type="button"
+                                onClick={() => setObjectSubImages(objectSubImages.filter((_, idx) => idx !== index))}
+                                className="text-red-500 hover:text-red-700 text-[9px] font-mono uppercase"
+                              >
+                                Delete (삭제)
+                              </button>
+                            </div>
+                            <ImageUploadField
+                              label=""
+                              value={imgUrl || ''}
+                              onChange={(newUrl) => {
+                                const list = [...objectSubImages];
+                                list[index] = newUrl;
+                                setObjectSubImages(list);
+                              }}
+                              placeholder="https://images.unsplash.com/..."
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div>
